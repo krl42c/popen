@@ -8,6 +8,7 @@
 #include <algorithm> 
 #include <ranges>
 #include <memory>
+#include <concepts>
 #include <stdexcept> 
 
 #ifdef _RAYLIB_BACKEND
@@ -21,6 +22,12 @@
 #pragma once
 
 namespace po {
+
+    template<typename T>
+    concept Backend_Wrapper = requires(T t, std::string file) {
+        {t.load_image(file)};
+    };
+
     struct Pool {
         std::vector<std::string> files;
         std::vector<Image> images;
@@ -38,7 +45,7 @@ namespace po {
     template<typename Iterator>
     void fill_with_images(Iterator it, std::vector<std::string> *target);
 
-    template<class Wrapper, class Result> 
+    template<Backend_Wrapper Wrapper, class Result> 
     struct View_Manager {
         std::optional<std::shared_ptr<Pool>> image_pool;
         std::vector<Result> result_vector;
