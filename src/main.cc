@@ -4,7 +4,9 @@
 #include "raylib.h"
 #include "popen.h"
 
-int main() {
+int main(int argc, char* argv[]) {
+    if (argc == 2) std::cout << "2 argc\n";
+
     auto p = po::create_pool(".", true);
     po::load_pool(p.get());
 
@@ -20,8 +22,10 @@ int main() {
 
     std::size_t end = p->images.size();
     
-    auto textures = po::tex_array(p, start, end);
 
+    po::View_Manager<po::Raylib_Wrapper, Texture2D> manager(".");
+    auto textures = manager.result_vector;
+    
     SetTargetFPS(60);               
     while (!WindowShouldClose())   
     {
