@@ -31,23 +31,24 @@ bool po::unload_pool(Pool *p) {
     return p->images.empty();
 }
 
-po::Pool po::create_pool(const char* directory, bool recursive) {
+std::shared_ptr<po::Pool> po::create_pool(const char* directory, bool recursive) {
     assert(dir_exists(directory)); 
-
     Pool p{};
 
-    if (recursive) po::fill_with_images(std::filesystem::recursive_directory_iterator(directory), &p.files);
-    if (!recursive) po::fill_with_images(std::filesystem::directory_iterator(directory), &p.files);
+    if (recursive) 
+        po::fill_with_images(std::filesystem::recursive_directory_iterator(directory), &p.files);
+    else 
+        po::fill_with_images(std::filesystem::directory_iterator(directory), &p.files);
 
     assert(!p.files.empty());
 
-    return p;
+    return std::make_shared<Pool>(p);
 }
 
-std::vector<Texture2D> po::tex_array(Pool *p, size_t from, size_t to) {    
+std::vector<Texture2D> po::tex_array(std::shared_ptr<Pool> p, std::size_t from, std::size_t to) {    
     std::vector<Texture2D> texture_vec;
          
-    std::ranges::for_each(std::views::iota(from, to), [&texture_vec, p](size_t i) {
+    std::ranges::for_each(std::views::iota(from, to), [&texture_vec, p](std::size_t i) {
         texture_vec.push_back(LoadTextureFromImage(p->images.at(i)));
     });
     return texture_vec;
@@ -65,9 +66,7 @@ void po::fill_with_images(Iterator it, std::vector<std::string> *target) {
     });
 }
 
-
 // Utility
-
 bool dir_exists(const char* dir) { 
     std::ifstream test(dir);
     return test ? true : false;

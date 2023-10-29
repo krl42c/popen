@@ -7,6 +7,7 @@
 #include <filesystem>
 #include <algorithm> 
 #include <ranges>
+#include <memory>
 #include "raylib.h"
 
 #pragma once
@@ -20,11 +21,11 @@ namespace po {
     bool load_pool(Pool *p);
     bool unload_pool(Pool *p);
     
-    Pool create_pool(const char* directoy, bool recursive);
+    std::shared_ptr<Pool> create_pool(const char* directoy, bool recursive);
     Pool create_pool(std::vector<const char*> files);
     Pool create_pool();
 
-    std::vector<Texture2D> tex_array(Pool *p, size_t from, size_t to);
+    std::vector<Texture2D> tex_array(std::shared_ptr<Pool> p, size_t from, size_t to);
 
     template<typename Iterator>
     void fill_with_images(Iterator it, std::vector<std::string> *target);
